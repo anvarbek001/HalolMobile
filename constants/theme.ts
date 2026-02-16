@@ -10,20 +10,18 @@ const tintColorDark = '#fff';
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    tint: "#00A86B", // Halol uchun yashil rang
+    background: "#F5F5F5",
+    text: "#000000",
+    tabIconDefault: "#687076",
+    tabIconSelected: "#00A86B",
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    tint: "#4ADE80", // Ochroq yashil dark mode uchun
+    background: "#000000",
+    text: "#FFFFFF",
+    tabIconDefault: "#8E8E93",
+    tabIconSelected: "#4ADE80",
   },
 };
 
