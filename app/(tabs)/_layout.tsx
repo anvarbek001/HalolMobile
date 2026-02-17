@@ -100,7 +100,7 @@ export default function TabLayout() {
                   focused && styles.iconContainerFocused,
                 ]}
               >
-                <IconSymbol size={30} name="paperplane.fill" color={color} />
+                <IconSymbol size={30} name="qrcode" color={color} />
               </View>
             ),
           }}
