@@ -1,14 +1,12 @@
 import { LinearGradient } from "expo-linear-gradient";
-import * as NavigationBar from "expo-navigation-bar";
 import { Tabs } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { StatusBar } from "expo-status-bar";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -54,7 +52,7 @@ export default function TabLayout() {
         }}
       >
         <Tabs.Screen
-          name="index"
+          name="homescreen"
           options={{
             tabBarIcon: ({ color, focused }) => (
               <View
@@ -126,7 +124,7 @@ const styles = StyleSheet.create({
   qrCodeContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: -7, // Yuqoriga ko'tarish
+    marginTop: -7,
   },
   qrCodeButton: {
     width: 64,

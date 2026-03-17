@@ -1,5 +1,8 @@
 // app/profile.tsx
+import { useAuth } from "@/context/AuthContext";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import {
   Alert,
   Image,
@@ -10,7 +13,6 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 const C = {
   green: "#20d05b",
@@ -44,7 +46,10 @@ const MENU_ITEMS = [
         {
           text: "Chiqish",
           style: "destructive",
-          onPress: () => router.replace("/"),
+          onPress: async () => {
+            await SecureStore.deleteItemAsync("token");
+            router.replace("/login");
+          },
         },
       ]),
   },
@@ -52,6 +57,7 @@ const MENU_ITEMS = [
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
+  const { customer } = useAuth();
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -80,8 +86,8 @@ export default function ProfileScreen() {
               <MaterialIcons name="camera-alt" size={15} color={C.white} />
             </TouchableOpacity>
           </View>
-          <Text style={styles.userName}>Abdulloh Karimov</Text>
-          <Text style={styles.userEmail}>abdulloh@gmail.com</Text>
+          <Text style={styles.userName}>{customer?.name}</Text>
+          <Text style={styles.userEmail}>{customer?.email}</Text>
         </View>
 
         {/* ── Statistika ── */}

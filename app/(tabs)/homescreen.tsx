@@ -1,4 +1,6 @@
+import { API_URL } from "@/constants/api";
 import { router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
@@ -57,7 +59,6 @@ const categories = [
 ];
 
 export default function HomeScreen() {
-  // ✅ Safe area - iPhone notch va home indicator
   const insets = useSafeAreaInsets();
 
   const autoScrollRef = useRef<ScrollView>(null);
@@ -83,6 +84,26 @@ export default function HomeScreen() {
     }, 20);
     return () => clearInterval(interval);
   }, [isUserScrolling]);
+
+  useEffect(() => {
+    (async () => {
+      const savedToken = await SecureStore.getItemAsync("token");
+      console.log("homescreen token", savedToken);
+      if (!savedToken) {
+        router.replace("/login");
+      }
+    })();
+  }, []);
+
+  useEffect(() => {}, []);
+
+  const brandsData = async () => {
+    const res = await fetch(API_URL, {
+      method: "GET",
+    });
+
+    const data = await res.json();
+  };
 
   const handleScrollBegin = () => {
     setIsUserScrolling(true);

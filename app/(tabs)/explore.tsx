@@ -117,7 +117,6 @@ export default function TabTwoScreen() {
 
   return (
     <View style={styles.root}>
-      {/* ✅ Header - margin yo'q, ekran tepasiga yopishadi */}
       <ModalScreen />
 
       <ScrollView
@@ -250,6 +249,7 @@ export default function TabTwoScreen() {
           </View>
         )}
       </ScrollView>
+      
     </View>
   );
 }
