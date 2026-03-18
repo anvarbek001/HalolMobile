@@ -34,20 +34,16 @@ const C = {
   border: "#d4e6d9",
 };
 
+type Brand = {
+  id: number;
+  name: string;
+  rating: number;
+  license: string;
+  logo: string;
+};
+
 // ✅ Tab bar balandligi - expo-router default
 const TAB_BAR_HEIGHT = Platform.OS === "ios" ? 83 : 60;
-
-const brands = Array(10)
-  .fill(null)
-  .map((_, i) => ({
-    id: i + 1,
-    name: `Brand ${i + 1}`,
-    category: ["Go'sht", "Non", "Sut", "Ichimlik", "Sabzavot"][i % 5],
-    rating: (4.2 + i * 0.07).toFixed(1),
-    image: require("../../assets/images/halol_icon.jpg"),
-  }));
-
-const featured = brands.slice(0, 4);
 
 const categories = [
   { icon: "🥩", label: "Go'sht" },
@@ -68,6 +64,9 @@ export default function HomeScreen() {
   const [searchText, setSearchText] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [featured,setFeatured] = useState<Brand[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -77,9 +76,9 @@ export default function HomeScreen() {
           x: scrollPosition.current,
           animated: false,
         });
-        if (scrollPosition.current >= brands.length * 104) {
-          scrollPosition.current = 0;
-        }
+        // if (scrollPosition.current >= brands.length * 104) {
+        //   scrollPosition.current = 0;
+        // }
       }
     }, 20);
     return () => clearInterval(interval);
@@ -94,17 +93,23 @@ export default function HomeScreen() {
       }
     })();
   }, []);
-  
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    brandsData();
+  }, []);
 
-  const brandsData = async () => {
-    const res = await fetch(API_URL, {
-      method: "GET",
-    });
-
-    const data = await res.json();
-  };
+ const brandsData = async () => {
+   try {
+     const res = await fetch(`${API_URL}/api/brands/index`);
+     const data = await res.json();
+     setBrands(data);
+     setFeatured(data);
+   } catch (error) {
+     console.error("Brands error:", error);
+   } finally {
+     setLoading(false);
+   }
+ };
 
   const handleScrollBegin = () => {
     setIsUserScrolling(true);
@@ -210,7 +215,7 @@ export default function HomeScreen() {
               contentContainerStyle={styles.brandScroll}
               keyboardShouldPersistTaps="handled"
             >
-              {brands.map((brand) => (
+              {brands.map((brand: any) => (
                 <TouchableOpacity
                   key={brand.id}
                   style={styles.brandCard}
@@ -218,7 +223,7 @@ export default function HomeScreen() {
                   activeOpacity={0.8}
                 >
                   <View style={styles.brandImageWrap}>
-                    <Image style={styles.brandIcon} source={brand.image} />
+                    <Image style={styles.brandIcon} source={{uri:brand.logo}} />
                     <View style={styles.brandVerified}>
                       <Text style={{ fontSize: 9, color: C.white }}>✓</Text>
                     </View>
@@ -271,14 +276,14 @@ export default function HomeScreen() {
             </View>
 
             <View style={styles.featuredGrid}>
-              {featured.map((brand) => (
+               {brands.map((brand) => (
                 <TouchableOpacity
                   key={brand.id}
                   style={styles.featuredCard}
                   onPress={() => router.push("/_store")}
                   activeOpacity={0.85}
                 >
-                  <Image source={brand.image} style={styles.featuredImage} />
+                  <Image source={{uri:brand.logo}} style={styles.featuredImage} />
                   <View style={styles.featuredInfo}>
                     <View style={styles.featuredTopRow}>
                       <Text style={styles.featuredName}>{brand.name}</Text>

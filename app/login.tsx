@@ -92,7 +92,7 @@ export default function LoginScreen() {
       });
       console.log(data);
       await login(data.token, data.customer);
-      router.replace("/pincode");
+      router.replace("/(tabs)/homescreen");
     } catch (e: any) {
       Alert.alert("Xatolik", e.message);
       console.log("Xatolik", e.message);
