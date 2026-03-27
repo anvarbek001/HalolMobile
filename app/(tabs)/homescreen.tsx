@@ -8,6 +8,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -40,6 +41,7 @@ type Brand = {
   rating: number;
   license: string;
   logo: string;
+  description: string;
 };
 
 // ✅ Tab bar balandligi - expo-router default
@@ -65,8 +67,9 @@ export default function HomeScreen() {
   const [searchFocused, setSearchFocused] = useState(false);
   const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [brands, setBrands] = useState<Brand[]>([]);
-  const [featured,setFeatured] = useState<Brand[]>([]);
+  const [featured, setFeatured] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -87,7 +90,6 @@ export default function HomeScreen() {
   useEffect(() => {
     (async () => {
       const savedToken = await SecureStore.getItemAsync("token");
-      console.log("homescreen token", savedToken);
       if (!savedToken) {
         router.replace("/login");
       }
@@ -98,18 +100,18 @@ export default function HomeScreen() {
     brandsData();
   }, []);
 
- const brandsData = async () => {
-   try {
-     const res = await fetch(`${API_URL}/api/brands/index`);
-     const data = await res.json();
-     setBrands(data);
-     setFeatured(data);
-   } catch (error) {
-     console.error("Brands error:", error);
-   } finally {
-     setLoading(false);
-   }
- };
+  const brandsData = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/brands/index`);
+      const data = await res.json();
+      setBrands(data);
+      setFeatured(data);
+    } catch (error) {
+      console.error("Brands error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleScrollBegin = () => {
     setIsUserScrolling(true);
@@ -118,6 +120,12 @@ export default function HomeScreen() {
 
   const handleScrollEnd = () => {
     scrollTimeout.current = setTimeout(() => setIsUserScrolling(false), 2000);
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await brandsData();
+    setRefreshing(false);
   };
 
   return (
@@ -145,6 +153,14 @@ export default function HomeScreen() {
             keyboardShouldPersistTaps="handled"
             // ✅ Scroll qilganda keyboard avtomatik yopiladi
             keyboardDismissMode="on-drag"
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={C.green}
+                colors={[C.green]}
+              />
+            }
           >
             {/* ── Hero Banner ── */}
             <View style={styles.heroBanner}>
@@ -219,11 +235,26 @@ export default function HomeScreen() {
                 <TouchableOpacity
                   key={brand.id}
                   style={styles.brandCard}
-                  onPress={() => router.push("/_store")}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/_store",
+                      params: {
+                        id: brand.id,
+                        name: brand.name,
+                        logo: brand.logo,
+                        rating: brand.rating,
+                        license: brand.license,
+                        description: brand.description,
+                      },
+                    })
+                  }
                   activeOpacity={0.8}
                 >
                   <View style={styles.brandImageWrap}>
-                    <Image style={styles.brandIcon} source={{uri:brand.logo}} />
+                    <Image
+                      style={styles.brandIcon}
+                      source={{ uri: brand.logo }}
+                    />
                     <View style={styles.brandVerified}>
                       <Text style={{ fontSize: 9, color: C.white }}>✓</Text>
                     </View>
@@ -276,14 +307,29 @@ export default function HomeScreen() {
             </View>
 
             <View style={styles.featuredGrid}>
-               {brands.map((brand) => (
+              {brands.map((brand) => (
                 <TouchableOpacity
                   key={brand.id}
                   style={styles.featuredCard}
-                  onPress={() => router.push("/_store")}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/_store",
+                      params: {
+                        id: brand.id,
+                        name: brand.name,
+                        logo: brand.logo,
+                        rating: brand.rating,
+                        license: brand.license,
+                        description: brand.description,
+                      },
+                    })
+                  }
                   activeOpacity={0.85}
                 >
-                  <Image source={{uri:brand.logo}} style={styles.featuredImage} />
+                  <Image
+                    source={{ uri: brand.logo }}
+                    style={styles.featuredImage}
+                  />
                   <View style={styles.featuredInfo}>
                     <View style={styles.featuredTopRow}>
                       <Text style={styles.featuredName}>{brand.name}</Text>
@@ -291,7 +337,7 @@ export default function HomeScreen() {
                         <Text style={styles.ratingText}>⭐ {brand.rating}</Text>
                       </View>
                     </View>
-                    <Text style={styles.featuredCat}>{brand.category}</Text>
+                    {/* <Text style={styles.featuredCat}>{brand.category}</Text> */}
                     <View style={styles.featuredFooter}>
                       <View style={styles.halalDot} />
                       <Text style={styles.halalLabel}>Halol sertifikat</Text>

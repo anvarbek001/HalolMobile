@@ -1,15 +1,20 @@
+import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
   Image,
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
+  View,
 } from "react-native";
 import ModalScreen from "./modal";
 
 const Store = () => {
+  const { id, name, logo, rating, license, description } =
+    useLocalSearchParams();
+  const isPdf = (uri: string) => uri?.toLowerCase().endsWith(".pdf");
   return (
     <View style={styles.root}>
       <ModalScreen />
@@ -21,10 +26,7 @@ const Store = () => {
       >
         {/* Hero Image */}
         <View style={styles.imageWrapper}>
-          <Image
-            style={styles.image}
-            source={require("../assets/images/halol_icon.jpg")}
-          />
+          <Image style={styles.image} source={{ uri: logo as string }} />
           <View style={styles.badge}>
             <Text style={styles.badgeText}>✓ Halol</Text>
           </View>
@@ -34,8 +36,8 @@ const Store = () => {
         <View style={styles.card}>
           <View style={styles.brandRow}>
             <View>
-              <Text style={styles.brandName}>Brend nomi</Text>
-              <Text style={styles.brandId}># 1234</Text>
+              <Text style={styles.brandName}>{name}</Text>
+              <Text style={styles.brandId}># {id}</Text>
             </View>
             <TouchableOpacity style={styles.followBtn}>
               <Text style={styles.followText}>Kuzatish</Text>
@@ -45,7 +47,7 @@ const Store = () => {
           {/* Stats Row */}
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>4.9</Text>
+              <Text style={styles.statNumber}>{rating}</Text>
               <Text style={styles.statLabel}>Reyting</Text>
             </View>
             <View style={styles.statDivider} />
@@ -64,25 +66,34 @@ const Store = () => {
         {/* Description Card */}
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Brend haqida</Text>
-          <Text style={styles.description}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. A magnam
-            cupiditate incidunt perferendis ducimus adipisci ab odio? At quos
-            quo natus deserunt hic, voluptatibus excepturi? Nemo velit culpa hic
-            voluptas nam quia nulla aperiam aut voluptatem, molestias laboriosam
-            eum odit tempore odio blanditiis perferendis? Amet quibusdam saepe
-            quisquam possimus sed qui dolor voluptates id delectus, quaerat
-            ullam asperiores temporibus consequatur nulla aliquid et optio
-            molestiae sapiente minima officia!
-          </Text>
+          <Text style={styles.description}>{description}</Text>
         </View>
-
         {/* Tags */}
-        <View style={styles.tagsRow}>
+        {/* <View style={styles.tagsRow}>
           {["Go'sht", "Sut mahsulot", "Non", "Ichimlik"].map((tag) => (
             <View key={tag} style={styles.tag}>
               <Text style={styles.tagText}>{tag}</Text>
             </View>
           ))}
+        </View> */}
+
+        <View style={styles.imageWrapper}>
+          {isPdf(license as string) ? (
+            <TouchableOpacity
+              style={styles.pdfBox}
+              onPress={() => Linking.openURL(license as string)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.pdfIcon}>📄</Text>
+              <Text style={styles.pdfTitle}>Litsenziya (PDF)</Text>
+              <Text style={styles.pdfSub}>Ko'rish uchun bosing</Text>
+            </TouchableOpacity>
+          ) : (
+            <Image style={styles.image} source={{ uri: license as string }} />
+          )}
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>✓ Halol</Text>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -114,6 +125,30 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 12,
     marginBottom: 16,
+  },
+  pdfBox: {
+    width: "100%",
+    height: 240,
+    borderRadius: 20,
+    backgroundColor: "#e8faf0",
+    borderWidth: 2,
+    borderColor: "#20d05b",
+    borderStyle: "dashed",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  pdfIcon: {
+    fontSize: 48,
+  },
+  pdfTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#111827",
+  },
+  pdfSub: {
+    fontSize: 13,
+    color: "#6b7280",
   },
   image: {
     width: "100%",
